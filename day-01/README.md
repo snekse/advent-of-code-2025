@@ -13,7 +13,7 @@ You arrive at the secret entrance to the North Pole base ready to start decorati
 
 "Due to new security protocols, the password is locked in the safe below. Please see the attached document for the new combination."
 
-The safe has a dial with only an arrow on it; around the dial are the numbers `0` through `99` in order. As you turn the dial, it makes a small `click` noise as it reaches each number.
+The safe has a dial with only an arrow on it; around the dial are the numbers `0` through `99` in order. As you turn the dial, it makes a small *click* noise as it reaches each number.
 
 The attached document (your puzzle input) contains a sequence of rotations, one per line, which tell you how to open the safe. A rotation starts with an L or R which indicates whether the rotation should be to the *left* (toward lower numbers) or to the *right* (toward higher numbers). Then, the rotation has a *distance* value which indicates how many clicks the dial should be rotated in that direction.
 
