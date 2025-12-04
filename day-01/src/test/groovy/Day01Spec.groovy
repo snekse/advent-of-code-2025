@@ -1,4 +1,4 @@
-package day01
+package com.snekse.advent.2025
 
 import spock.lang.Specification
 
