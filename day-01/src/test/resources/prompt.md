@@ -1,4 +1,6 @@
-There is a puzzle to solve in this module's README.md file.
+There is a puzzle to solve in this module's README.md file.  
+
+The puzzle has two parts.
 
 Create a plan to solve the puzzle, then implement it.
 
