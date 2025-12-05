@@ -16,6 +16,9 @@ subprojects {
             events "passed", "skipped", "failed", "standardOut", "standardError"
             showStandardStreams = true
         }
+        filter {
+            failOnNoMatchingTests = false
+        }
     }
     
 }

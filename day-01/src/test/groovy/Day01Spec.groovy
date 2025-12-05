@@ -1,7 +1,5 @@
 import spock.lang.Specification
-/**
- * https://adventofcode.com/2025/day/1
- */
+
 class Safe {
     int currentPosition = 50
 
@@ -27,6 +25,9 @@ class Safe {
     }
 }
 
+/**
+ * https://adventofcode.com/2025/day/1
+ */
 class Day01Spec extends Specification {
     def safe = new Safe()
 
