@@ -45,6 +45,12 @@ class Day01Spec extends Specification {
         'R50'       || 0             || 1
         'L51'       || 99            || 0
         'R51'       || 1             || 0
+        'L100'      || 50            || 1
+        'R100'      || 50            || 1
+        'L150'      || 0             || 2
+        'R150'      || 0             || 2
+        'L200'      || 50            || 2
+        'R200'      || 50            || 2
     }
 
     def "real password test"() {
