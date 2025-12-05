@@ -2,7 +2,6 @@ subprojects {
     apply plugin: 'groovy'
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 
@@ -13,6 +12,10 @@ subprojects {
 
     test {
         useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+            showStandardStreams = true
+        }
     }
     
 }
