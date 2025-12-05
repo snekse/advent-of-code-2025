@@ -1,11 +1,12 @@
 import spock.lang.Specification
-/**
- * https://adventofcode.com/2025/day/1
- */
+
 class Safe {
     // TODO: Implement this
 }
 
+/**
+ * https://adventofcode.com/2025/day/1
+ */
 class Day01Spec extends Specification {
     def safe = new Safe()
 
@@ -15,4 +16,8 @@ class Day01Spec extends Specification {
     //      The Solve might need to `println` the answer
     //      Create additional helper methods and tests as needed
     
+        def "Solve"() {
+        expect:
+        true
+    }
 }
