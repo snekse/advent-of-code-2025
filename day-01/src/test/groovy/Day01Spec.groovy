@@ -1,14 +1,34 @@
 import spock.lang.Specification
+
+import spock.lang.Ignore
+
 /**
  * https://adventofcode.com/2025/day/1
  */
 class Safe {
     int currentValue = 50
-    int zeroCount = 0
+    int passedZeroCount = 0
+    int landedZeroCount = 0
+
+    int getZeroCount() {
+        return passedZeroCount + landedZeroCount
+    }
 
     int turnDial(String instruction) {
         def direction = instruction[0]
         def amount = instruction.substring(1) as int
+        assert amount >= 0 : "Amount must be >=0"
+        def startValue = currentValue
+
+        if (amount == 0) {
+            return currentValue
+        }
+
+        if (amount > 100) {
+            int rotations = (amount / 100) as int
+            passedZeroCount += rotations
+            amount -= (rotations * 100)
+        }
 
         if (direction == 'L') {
             currentValue -= amount
@@ -16,13 +36,21 @@ class Safe {
             currentValue += amount
         }
 
-        currentValue %= 100
-        if (currentValue < 0) currentValue += 100
-
-        if (currentValue == 0) {
-            zeroCount++
+        if(currentValue==100 || currentValue == 0) {
+            landedZeroCount++
+            currentValue = 0
+        } else if (currentValue > 100) {
+            passedZeroCount++ // passed zero
+            currentValue %= 100
+        } else if (currentValue < 0) {
+            if (startValue != 0) {
+                passedZeroCount++ // passed zero
+            }
+            currentValue += 100
         }
 
+        // println "Final Current Value: $currentValue"
+        // println "Final Zero Counts: $passedZeroCount && $landedZeroCount"
         return currentValue
     }
 }
@@ -30,7 +58,25 @@ class Safe {
 class Day01Spec extends Specification {
     def safe = new Safe()
 
-    def "Test turnDial"() {
+    def "Test turnDial from Start"() {
+        safe.currentValue = start
+
+        expect:
+        safe.turnDial(instruction) == expectedValue
+        safe.zeroCount == zeroCount
+
+        where:
+        start | instruction || expectedValue || zeroCount
+        0     | 'L0'        || 0             || 0
+        0     | 'R1'        || 1             || 0  
+        0     | 'L1'        || 99            || 0
+        99    | 'R1'        || 0             || 1
+        1     | 'L1'        || 0             || 1
+        70    | 'R568'      || 38            || 6
+        62    | 'R233'      || 95            || 2
+    }
+
+    def "Test turnDial :: #instruction"() {
         expect:
         safe.turnDial(instruction) == expectedValue
         safe.zeroCount == zeroCount
@@ -43,14 +89,16 @@ class Day01Spec extends Specification {
         'R1'        || 51            || 0
         'L50'       || 0             || 1
         'R50'       || 0             || 1
-        'L51'       || 99            || 0
-        'R51'       || 1             || 0
+        'L51'       || 99            || 1
+        'R51'       || 1             || 1
         'L100'      || 50            || 1
         'R100'      || 50            || 1
         'L150'      || 0             || 2
         'R150'      || 0             || 2
         'L200'      || 50            || 2
         'R200'      || 50            || 2
+        'L250'      || 0             || 3
+        'R250'      || 0             || 3
     }
 
     def "real password test"() {
@@ -74,11 +122,11 @@ class Day01Spec extends Specification {
         safe.turnDial('R1')
         then:
         safe.zeroCount == 3
-
     }
 
     def "crack the password"() {
         given:
+        safe.currentValue = 50
         def resource = getClass().getResource('/input.txt')
         assert resource != null : "Could not find input.txt"
         def file = new File(resource.toURI())
@@ -91,9 +139,12 @@ class Day01Spec extends Specification {
                 println "Turn dial: $val -> $newValue"
             }
         }
-        println "Zero Count: ${safe.zeroCount}"
+        println "Landed Zero Count: ${safe.landedZeroCount}"
+        println "Passed Zero Count: ${safe.passedZeroCount}"
 
         then:
         safe.currentValue != null
+        safe.landedZeroCount == 1048
+        safe.zeroCount == 6498
     }
 }
