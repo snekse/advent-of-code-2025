@@ -1,5 +1,7 @@
 import spock.lang.Specification
-
+/**
+ * https://adventofcode.com/2025/day/1
+ */
 class Safe {
     int currentValue = 50
     int zeroCount = 0
@@ -45,9 +47,47 @@ class Day01Spec extends Specification {
         'R51'       || 1             || 0
     }
 
+    def "real password test"() {
+        when:
+        safe.turnDial('L50') // get to 0
+        then:
+        safe.zeroCount == 1
+        when:
+        safe.turnDial('R1')
+        then:
+        safe.zeroCount == 1
+        when:
+        safe.turnDial('L1')
+        then:
+        safe.zeroCount == 2
+        when:
+        safe.turnDial('L1')
+        then:
+        safe.zeroCount == 2
+        when:
+        safe.turnDial('R1')
+        then:
+        safe.zeroCount == 3
+
+    }
+
     def "crack the password"() {
-        // TODO: 
-        expect:
-        true
+        given:
+        def resource = getClass().getResource('/input.txt')
+        assert resource != null : "Could not find input.txt"
+        def file = new File(resource.toURI())
+
+        when:
+        file.eachLine { line ->
+            if (line.trim()) {
+                def val = line.trim()
+                def newValue = safe.turnDial(val)
+                println "Turn dial: $val -> $newValue"
+            }
+        }
+        println "Zero Count: ${safe.zeroCount}"
+
+        then:
+        safe.currentValue != null
     }
 }
