@@ -1,4 +1,86 @@
 import spock.lang.Specification
+import spock.lang.Ignore
+
+class Banks {
+    int maxSize = 12
+    LinkedList<String> stack = []
+
+    void push(String value) {
+        
+        if (size() < maxSize) {
+            //println "size() < maxSize: ${size() < maxSize}"
+            stack.push(value)
+            return
+        }
+
+        if (value < stack.head() || isMaxValue()) {
+            // println "value < stack.head() || isMaxValue: ${value < stack.head() || isMaxValue}"
+            return
+        }
+
+        trim()
+
+        // println "Pushing $value onto stack"
+        stack.push(value)
+    }
+
+    private void trim() {
+        def exit = false
+        (0..maxSize-1).each { i -> 
+            if (exit) {
+                return
+            }
+            def j = i+1
+            if (j >= maxSize) {
+                // println "Removing last element"
+                stack.remove(i) // remove last
+                exit = true
+                return
+            }
+            if (stack[i] < stack[j]) {
+                // println "${stack[i]} @ idx $i < ${stack[j]} @ idx $j - removing ${stack[i]} @ $i"
+                stack.remove(i)
+                exit = true
+                return
+            }
+        }
+    }
+
+    boolean isMaxValue() {
+        isFull() && stack.every { it == '9' }
+    }
+    
+    boolean isFull() {
+        size() == maxSize
+    }
+
+    int size() {
+        stack.size()
+    }
+}
+
+class BanksSpec extends Specification {
+    def banks = new Banks()
+
+    def "Banks push first element"() {
+        when:
+        banks.push("1")
+
+        then:
+        banks.stack == ["1"]
+    }
+
+    def "Banks trim works as expected" () {
+        def input = '19283746556382'.reverse()
+        input.each { banks.push(it) }
+        
+        when:
+        def result = banks.stack.join() as long
+
+        then:
+        result == 983746556382
+    }
+}
 
 /**
  * https://adventofcode.com/2025/day/3
@@ -79,6 +161,7 @@ class Day03Spec extends Specification {
         "892"               || 92
     }
 
+    @Ignore // this asserts a value for input from part 1
     def "Solve"() {
         // read input file and process each line    
         def sum = new File("src/test/resources/input.txt")
@@ -92,5 +175,22 @@ class Day03Spec extends Specification {
 
         expect:
         sum == 16842
+    }
+
+    def "Solve Part 2 with Banks"() {
+        // read input file and process each line    
+        def sum = new File("src/test/resources/input.txt")
+            .text
+            .split("\n").collect { line ->
+                def banks = new Banks()
+                line.trim().reverse().each { banks.push(it) }
+                def result = banks.stack.join() as long
+                println result
+                return result
+            }.sum(0)
+        println "sum: $sum"
+
+        expect:
+        sum == 167523425665348
     }
 }
