@@ -3,7 +3,9 @@ import spock.lang.Ignore
 
 class Banks {
     int maxSize = 12
-    LinkedList<String> stack = []
+    // ArrayList is preferred over LinkedList here despite frequent insertions at index 0.
+    // For small sizes (12), CPU cache locality makes array shifting faster than pointer chasing.
+    List<String> stack = new ArrayList<>(maxSize)
 
     void push(String value) {
         
@@ -13,7 +15,7 @@ class Banks {
             return
         }
 
-        if (value < stack.head() || isMaxValue()) {
+        if (value < stack.first() || isMaxValue()) {
             // println "value < stack.head() || isMaxValue: ${value < stack.head() || isMaxValue}"
             return
         }
@@ -21,28 +23,19 @@ class Banks {
         trim()
 
         // println "Pushing $value onto stack"
-        stack.push(value)
+        stack.add(0, value)
     }
 
     private void trim() {
-        def exit = false
-        (0..maxSize-1).each { i -> 
-            if (exit) {
-                return
-            }
-            def j = i+1
-            if (j >= maxSize) {
-                // println "Removing last element"
-                stack.remove(i) // remove last
-                exit = true
-                return
-            }
-            if (stack[i] < stack[j]) {
-                // println "${stack[i]} @ idx $i < ${stack[j]} @ idx $j - removing ${stack[i]} @ $i"
-                stack.remove(i)
-                exit = true
-                return
-            }
+        // Find the first index where the current digit is less than the next digit
+        // This indicates a position where removing the current digit yields a larger number
+        def indexToRemove = (0..<maxSize - 1).find { i -> stack[i] < stack[i + 1] }
+
+        if (indexToRemove != null) {
+            stack.remove((int) indexToRemove)
+        } else {
+            // If no such digit exists, remove the last one to make space
+            stack.removeLast()
         }
     }
 
@@ -179,15 +172,14 @@ class Day03Spec extends Specification {
 
     def "Solve Part 2 with Banks"() {
         // read input file and process each line    
-        def sum = new File("src/test/resources/input.txt")
-            .text
-            .split("\n").collect { line ->
-                def banks = new Banks()
-                line.trim().reverse().each { banks.push(it) }
-                def result = banks.stack.join() as long
-                println result
-                return result
-            }.sum(0)
+        def sum = 0L
+        new File("src/test/resources/input.txt").eachLine { line ->
+            def banks = new Banks()
+            // Process reversed line
+            line.trim().reverse().each { banks.push(it) }
+            def result = banks.stack.join() as long
+            sum += result
+        }
         println "sum: $sum"
 
         expect:
